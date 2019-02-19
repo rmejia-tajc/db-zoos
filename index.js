@@ -26,9 +26,11 @@ const errors = {
 
 // create zoo
 server.post('/api/zoos', async (req, res) => {
+
   if (!req.body.name) {
     res.status(400).json({ message : 'Please enter a value for this entry'});
   } else {
+
       try {
         const [id] = await db('zoos').insert(req.body);
 
@@ -44,7 +46,35 @@ server.post('/api/zoos', async (req, res) => {
     }
 });
 
+// get a list of all zoos
+server.get('/api/zoos', async (req, res) => {
 
+  try {
+    const zoos = await db('zoos');
+    
+    res.status(200).json(zoos);
+  } catch (error) {
+    res.status(500).json(error);
+  }  
+});
+
+// get a zoo by id
+server.get('/api/zoos/:id', async (req, res) => {
+  try {
+    const zoo = await db('zoos')
+      .where({ id: req.params.id })
+      .first();
+
+    if (zoo) {
+      res.status(200).json(zoo);
+    } else {
+      res.status(404).json({ message : 'The entry with that specified ID does not exist'});
+    }
+
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 
 
 
