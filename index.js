@@ -76,6 +76,44 @@ server.get('/api/zoos/:id', async (req, res) => {
   }
 });
 
+// delete a zoo
+server.delete('/api/zoos/:id', async (req, res) => {
+  try {
+    const count = await db('zoos')
+      .where({ id: req.params.id })
+      .del();
+
+    if (count > 0) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({ message: 'The entry with that specified ID does not exist' });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// update a zoo
+server.put('/api/zoos/:id', async (req, res) => {
+  try {
+    const count = await db('zoos')
+      .where({ id: req.params.id })
+      .update(req.body);
+
+    if (count > 0) {
+      const role = await db('zoos')
+        .where({ id: req.params.id })
+        .first();
+
+      res.status(200).json(role);
+    } else {
+      res.status(404).json({ message: 'The entry with that specified ID does not exist' });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 
 
 
